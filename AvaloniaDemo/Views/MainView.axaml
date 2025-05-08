@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:conventer="clr-namespace:AvaloniaDemo.Conventer"
+             xmlns:vm="clr-namespace:AvaloniaDemo.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AvaloniaDemo.Views.MainView"
+             x:DataType="vm:EnvironmentCheckViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+	  <vm:EnvironmentCheckViewModel />
+  </Design.DataContext>
+
+	<UserControl.Resources>
+		<conventer:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
+		<conventer:ObjectIsNotNullConverter x:Key="ObjectIsNotNullConverter"/>
+		<conventer:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+	</UserControl.Resources>
+  <Grid>
+	   <StackPanel Margin="20" Spacing="10">
+        <TextBlock Text="实验环境检测" FontSize="18"/>
+        
+        <ItemsControl ItemsSource="{Binding CheckItems}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5">
+                        <TextBlock Text="{Binding Name}" Width="150"/>
+                        
+                        <!-- 状态指示器 -->
+                        <Border Width="20" Height="20" CornerRadius="10"
+                                Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">                     
+                        </Border>
+
+						<TextBlock Width="40" Text="{Binding Progress}" 
+								   IsVisible="{Binding Progress, Converter={StaticResource ObjectIsNotNullConverter}}"/>
+                                     
+                        <!-- 修复按钮 -->
+                        <Button Content="立即下载" Command="{Binding FixCommand}"
+                                IsVisible="{Binding Status, Converter={StaticResource EnumEqualsConverter}, 
+                                    ConverterParameter=Failed}"
+								IsEnabled="True"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        
+        <Button Content="重新检测" Command="{Binding RecheckCommand}"
+                HorizontalAlignment="Right" Margin="0,20,0,0"/>
+    </StackPanel>
+  </Grid>
+</UserControl>
